@@ -6,7 +6,6 @@ var logger = require('morgan');
 
 const MongoClient = require("mongodb").MongoClient;
 
-//var indexRouter = require('./routes/index');
 var recipesRouter = require('./routes/recipes');
 
 var app = express();
@@ -40,7 +39,6 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 
-//app.use('/', indexRouter);
 app.use('/recipes', recipesRouter);
 
 
