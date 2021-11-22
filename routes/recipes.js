@@ -1,7 +1,10 @@
 var express = require('express');
 var router = express.Router();
 
-/* GET recipes listing. */
+
+/**
+ * 1. List all recipes
+ */
 router.get('/', async function(req, res, next) {
     let db_collection_name = req.app.locals.db_collection;
     let db_recipes = await req.app.locals.db.collection(db_collection_name);
@@ -13,6 +16,9 @@ router.get('/', async function(req, res, next) {
 });
 
 
+/**
+ * 2. Search recipe names using MongoDB's text search.
+ */
 router.post("/", async function(req, res, next) {
 
     let recipe = req.body.recipe;  // input
@@ -31,6 +37,9 @@ router.post("/", async function(req, res, next) {
 });
 
 
+/**
+ * 3. Search recipes that use certain ingredients (for example "beef" and "potato").
+ */
 router.post("/ingredients", async function(req, res, next) {
 
     let ingredients = req.body.ingredients;  // input
