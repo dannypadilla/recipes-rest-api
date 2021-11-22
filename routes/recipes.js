@@ -30,4 +30,30 @@ router.post("/", async function(req, res, next) {
 
 });
 
+
+router.post("/ingredients", async function(req, res, next) {
+
+    let ingredients = req.body.ingredients;  // input
+
+    let db_collection_name = req.app.locals.db_collection;
+    let db_recipes = await req.app.locals.db.collection(db_collection_name);
+    let projection = {_id: false, name: true, ingredients: true};
+
+    let ingredients_formatted = [];  // will hold ingredients
+
+    // prepare list with ingredients from POST
+    for (let i = 0; i < ingredients.length; i++) {
+        ingredients_formatted.push( {"ingredients.name": ingredients[i]} );
+    }
+
+    let query = await db_recipes.find({
+        $and: ingredients_formatted
+    }).project(projection).toArray();
+
+    await query.forEach(doc => console.log(doc) );
+
+    res.json(query);
+
+});
+
 module.exports = router;
