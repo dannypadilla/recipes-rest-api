@@ -12,4 +12,22 @@ router.get('/', async function(req, res, next) {
     //res.send('respond with a resource');
 });
 
+
+router.post("/", async function(req, res, next) {
+
+    let recipe = req.body.recipe;  // input
+
+    let db_collection_name = req.app.locals.db_collection;
+    let db_recipes = await req.app.locals.db.collection(db_collection_name);
+
+    let query = await db_recipes.find({
+        $text: { $search: `\"${recipe}\"` }
+    }).toArray();
+
+    await query.forEach(doc => console.log(doc) );
+
+    res.json(query);
+
+});
+
 module.exports = router;
