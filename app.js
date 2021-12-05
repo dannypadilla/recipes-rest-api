@@ -5,10 +5,23 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
 const MongoClient = require("mongodb").MongoClient;
+const redis_client = require("redis").createClient();
 
 var recipesRouter = require('./routes/recipes');
 
 var app = express();
+
+
+// add redis to express
+(async () => {
+
+  redis_client.on('error', () => console.log('Redis Client Error', err) );
+
+  await redis_client.connect();
+  console.log("Connected REDIS server");
+
+  app.locals.redis = redis_client;  // add to express local scope
+})();
 
 
 // db connection init
