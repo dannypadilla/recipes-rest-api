@@ -12,13 +12,13 @@ var recipesRouter = require('./routes/recipes');
 var app = express();
 
 
-// add redis to express
+// init redis cache db
 (async () => {
 
   redis_client.on('error', () => console.log('Redis Client Error', err) );
 
   await redis_client.connect();
-  console.log("Connected REDIS server");
+  console.log("\nConnected REDIS server");
 
   app.locals.redis = redis_client;  // add to express local scope
 })();
@@ -37,7 +37,7 @@ MongoClient.connect(db_url, { useUnifiedTopology: true}, (err, client) => {
     console.error("Failed to connect to the database", err);
     process.exit(1);  // non zero value indicates an error
   } else {
-    console.log("Connected to the database");
+    console.log("Connected to MONGODB database.\n");
     app.locals.mongo = client;
     app.locals.db = client.db(db_user);
     app.locals.db_collection = db_collection;
