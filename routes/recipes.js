@@ -6,13 +6,47 @@ var router = express.Router();
  * 1. List all recipes
  */
 router.get('/', async function(req, res, next) {
+
     let db_collection_name = req.app.locals.db_collection;
     let db_recipes = await req.app.locals.db.collection(db_collection_name);
 
-    let projection = {_id: false, name: true};
+    // get REDIS client from express scope
+    let redis = req.app.locals.redis;
 
-    res.json( await db_recipes.find().project(projection).toArray() );
-    //res.send('respond with a resource');
+    // search REDIS cache
+    let redis_cache = await redis.get("recipes");
+
+    // cache-miss
+    if (redis_cache == null) {
+
+        console.log('\n\tData not found in REDIS cache.. Looking in MONGO..\n');
+        let projection = {_id: false, name: true};
+
+        // request data from MONGO
+        let data = await db_recipes.find().project(projection).toArray();
+
+        let data_str = JSON.stringify(data);  // for demo output
+        console.log(data_str);
+
+        // update cache in REDIS
+        await redis.set("recipes", data_str );
+
+        // response
+        res.json(data);
+
+    } else {
+        console.log("\n\tFound data in REDIS cache!\n");
+
+        let data = JSON.parse(redis_cache);
+
+        // log output for demo
+        console.log(`${redis_cache}\n`);
+
+        // response with cached data
+        res.json(data);
+
+    }
+
 });
 
 
